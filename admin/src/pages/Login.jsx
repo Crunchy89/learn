@@ -2,6 +2,7 @@ import React from "react";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import baseUrl from "../config";
+import Swal from "sweetalert";
 
 export default function Login() {
   const [Login, setLogin] = React.useState({ email: "", password: "" });
@@ -14,11 +15,21 @@ export default function Login() {
       .post(`${baseUrl}/api/auth/login`, Login)
       .then((res) => {
         if (res.data.status === true) {
+          Swal({
+            title: "Login Berhasil",
+            text: "Selamat datang",
+            icon: "success",
+          });
           localStorage.setItem("token", JSON.stringify(res.data.data.token));
           setAdmin(true);
         } else {
           if (res.data.message === "Error") {
             setError(res.data.data);
+            Swal({
+              title: "Gagal login",
+              text: "Periksa inputan",
+              icon: "warning",
+            });
           } else {
             console.log(res.data);
           }
@@ -26,6 +37,11 @@ export default function Login() {
       })
       .catch((err) => {
         console.log(err);
+        Swal({
+          title: "Network Error",
+          text: "Silahkan Coba lagi",
+          icon: "error",
+        });
       });
   };
   const handleinput = (e) => {

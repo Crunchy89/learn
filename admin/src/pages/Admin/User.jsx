@@ -9,6 +9,13 @@ import LoadingFull from "../../component/LoadingFull";
 
 const User = () => {
   const [Data, setData] = React.useState([]);
+  const [Role, setRole] = React.useState([]);
+  const [Tambah, setTambah] = React.useState({
+    username: "",
+    email: "",
+    password: "",
+    role_id: "",
+  });
   const [Loading, setLoading] = React.useState(true);
   const token = JSON.parse(localStorage.getItem("token"));
   React.useEffect(() => {
@@ -32,10 +39,27 @@ const User = () => {
         console.log(err);
         setLoading(false);
       });
+
+    axios
+      .get(`${baseUrl}/api/role/getAll`, { signal: signal })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.data !== null) {
+          setRole(res.data.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     return function cleanup() {
       abortController.abort();
     };
   }, [token]);
+  const handleTambah = (e) => {
+    const { name, value } = e.target;
+    let data = { ...Tambah, [name]: value };
+    setTambah(data);
+  };
   return (
     <div>
       {Loading ? <LoadingFull /> : ""}
@@ -51,7 +75,44 @@ const User = () => {
                 name="username"
                 id="username"
                 placeholder="Masukkan username"
+                onChange={handleTambah}
               />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                id="email"
+                placeholder="Masukkan email"
+                onChange={handleTambah}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                type="password"
+                className="form-control"
+                name="password"
+                id="password"
+                placeholder="Masukkan Password"
+                onChange={handleTambah}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="role">Role</label>
+              <select
+                name="role"
+                id="role"
+                className="form-control"
+                onChange={handleTambah}
+              >
+                <option value="">Pilih Role</option>
+                {Role.map((row, index) => {
+                  <option value={`${row.id}`}>{row.role}</option>;
+                })}
+              </select>
             </div>
           </div>
           <div className="modal-footer justify-content-between">
