@@ -12,6 +12,16 @@ class UserController {
       data: users,
     });
   }
+  async getUser({ auth, response }) {
+    const users = await User.query()
+      .join("roles", "users.role_id", "roles.id")
+      .fetch();
+    return response.status(200).json({
+      status: true,
+      message: "List User",
+      data: users,
+    });
+  }
 
   async getByRole({ auth, params, response }) {
     const users = await User.query().where("role_id", params.id).fetch();

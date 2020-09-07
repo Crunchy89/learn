@@ -36,6 +36,7 @@ class MenuController {
       .innerJoin("accesses", "menus.id", "accesses.menu_id")
       .where("accesses.role_id", auth.user.role_id)
       .where("menus.isActive", 1)
+      .orderBy("menus.order", "ASC")
       .with("submenu")
       .fetch();
 

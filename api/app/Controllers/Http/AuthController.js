@@ -7,18 +7,28 @@ class AuthController {
   async login({ request, auth, response }) {
     const rules = {
       email: "required|email",
-      password: "required",
+      password: "required|min:6",
     };
 
     const messages = {
-      "email.required": "Email tidak boleh kososng",
+      "email.required": "Email tidak boleh kosong",
       "email.email": "Format email tidak valid",
       "password.required": "Password tidak boleh kosong",
+      "password.min": "Password minimal 6 karakter",
     };
     const validation = await validateAll(request.all(), rules, messages);
 
     if (validation.fails()) {
-      return response.status(500).json(validation.messages());
+      const send = validation.messages();
+      let data = {};
+      send.map((row) => {
+        data = { ...data, [row.field]: row.message };
+      });
+      return response.json({
+        status: false,
+        message: "Error",
+        data: data,
+      });
     }
     let { email, password } = request.all();
 
@@ -28,11 +38,18 @@ class AuthController {
         let token = await auth.generate(user);
 
         Object.assign(user, token);
-        return response.json(token);
+        return response.json({
+          status: true,
+          message: "Berhasil Login",
+          data: token,
+        });
       }
     } catch (e) {
       console.log(e);
-      return response.json({ message: "You are not registered!" });
+      return response.json({
+        status: false,
+        message: "Email atau password salah",
+      });
     }
   }
   async register({ request, auth, response }) {
@@ -47,7 +64,7 @@ class AuthController {
       "role_id.required": "Role tidak boleh kosong",
       "username.required": "Username tidak boleh kosong",
       "username.unique": "Username sudah terdaftar",
-      "email.required": "Email tidak boleh kososng",
+      "email.required": "Email tidak boleh kosong",
       "email.email": "Format email tidak valid",
       "email.unique": "Email ini sudah terdaftar.",
       "password.required": "Password tidak boleh kosong",

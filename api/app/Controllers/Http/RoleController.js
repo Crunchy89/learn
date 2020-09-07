@@ -35,7 +35,7 @@ class RoleController {
     const validation = await validate(request.all(), rules, messages);
 
     if (validation.fails()) {
-      return response.status(500).json(validation.messages());
+      return response.json(validation.messages());
     }
     const roles = request.only(["role"]);
 

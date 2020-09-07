@@ -17,6 +17,9 @@ module.exports = {
   |
   */
   origin: true,
+  origin: function (currentOrigin) {
+    return currentOrigin === "http://localhost:3000";
+  },
 
   /*
   |--------------------------------------------------------------------------
